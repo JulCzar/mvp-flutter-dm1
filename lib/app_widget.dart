@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mvp_flutter_dm1/screens/details.dart';
 
 import 'screens/home.dart';
 
@@ -22,6 +23,7 @@ class _AppWidgetState extends State<AppWidget> {
       initialRoute: '/',
       routes: {
         '/': (context) => const Home(),
+        '/details': (context) => const Details(),
       },
     );
   }
