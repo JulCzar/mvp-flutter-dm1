@@ -22,8 +22,8 @@ class _AppWidgetState extends State<AppWidget> {
       title: 'Dictio',
       initialRoute: '/',
       routes: {
-        '/': (context) => const Home(),
-        '/details': (context) => const Details(),
+        '/': (context) => Home(),
+        '/details': (context) => Details(),
       },
     );
   }

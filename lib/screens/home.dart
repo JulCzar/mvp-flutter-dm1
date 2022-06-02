@@ -1,29 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:mvp_flutter_dm1/app_widget.dart';
 
 import '../widgets/button.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_text.dart';
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
 
-  @override
+  final inputController = TextEditingController();
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CustomText(text: 'Este é um dicionário.', size: 64),
-            const Input(),
-            Button(
-              text: 'Buscar',
-              onPressed: () {
-                Navigator.of(context).pushNamed('/details');
-              },
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                CustomText(text: 'Este é um ', size: 48),
+                CustomText(
+                  fontWeight: FontWeight.w700,
+                  text: 'Dicionário.',
+                  size: 64,
+                )
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Input(
+                  controller: inputController,
+                ),
+                Button(
+                  text: 'Buscar',
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                      '/details',
+                      arguments: inputController.text,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

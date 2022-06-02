@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:mvp_flutter_dm1/services/api.dart';
 import 'package:mvp_flutter_dm1/widgets/card.dart';
 import 'package:mvp_flutter_dm1/widgets/custom_input.dart';
 import 'package:mvp_flutter_dm1/widgets/custom_text.dart';
 
-class Details extends StatelessWidget {
-  const Details({Key? key}) : super(key: key);
-
+class Details extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    var text = useState<List<String>>(['']);
+
+    final args = ModalRoute.of(context)?.settings.arguments;
+
+    void getDetails(String word) async {
+      var _response = await api.get('/silabas/$word');
+
+      text.value = _response.data;
+    }
+
+    useEffect(() {
+      getDetails('amizade');
+    }, const []);
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -26,8 +40,8 @@ class Details extends StatelessWidget {
                 color: const Color.fromRGBO(255, 204, 0, 1),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    CustomText(
+                  children: [
+                    const CustomText(
                       text: 'Palavra do dia',
                       color: Colors.black,
                     ),
@@ -36,7 +50,7 @@ class Details extends StatelessWidget {
                       child: CustomText(
                         fontWeight: FontWeight.w900,
                         color: Colors.black,
-                        text: 'Amizade',
+                        text: text.value.join('-'),
                         size: 48,
                       ),
                     ),
