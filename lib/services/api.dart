@@ -3,7 +3,7 @@ import 'package:dio/native_imp.dart';
 
 var options = BaseOptions(
   baseUrl: 'https://significado.herokuapp.com/v2',
-  connectTimeout: 5000,
+  connectTimeout: const Duration(hours: 1).inMilliseconds,
 );
 
 var api = DioForNative(options);

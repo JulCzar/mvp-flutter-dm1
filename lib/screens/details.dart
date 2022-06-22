@@ -1,26 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:mvp_flutter_dm1/services/api.dart';
-import 'package:mvp_flutter_dm1/widgets/card.dart';
-import 'package:mvp_flutter_dm1/widgets/custom_input.dart';
-import 'package:mvp_flutter_dm1/widgets/custom_text.dart';
+
+import '../models/meaning.dart';
+import '../models/phrase.dart';
+import '../services/api.dart';
+import '../utils/parse_string_list.dart';
+import '../widgets/card.dart';
+import '../widgets/custom_input.dart';
+import '../widgets/custom_text.dart';
 
 class Details extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    var text = useState<List<String>>(['']);
+    String _word = 'Amizade';
+    var loading = useState(true);
+    var silabes = useState<List<String>>([]);
+    var phrases = useState<List<Phrase>>([]);
+    var sinonim = useState<List<String>>([]);
+    var meaning = useState<List<Meaning>>([]);
 
     final args = ModalRoute.of(context)?.settings.arguments;
 
     void getDetails(String word) async {
-      var _response = await api.get('/silabas/$word');
+      var _response = await Future.wait([
+        api.get('/silabas/$word').then((v) => v.data),
+        api.get('/frases/$word').then((v) => v.data),
+        api.get('/sinonimos/$word').then((v) => v.data),
+        api.get('/significados/$word').then((v) => v.data),
+      ]).whenComplete(() {
+        loading.value = false;
+      });
 
-      text.value = _response.data;
+      silabes.value = parseStringList(_response[0]);
+      phrases.value = Phrase.newListFromMap(_response[1]);
+      sinonim.value = parseStringList(_response[2]);
+      meaning.value = Meaning.newListFromMap(_response[3]);
     }
 
     useEffect(() {
-      getDetails('amizade');
+      getDetails(_word);
     }, const []);
+
+    if (loading.value) {
+      return const LoadingIndicator();
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -35,94 +58,86 @@ class Details extends HookWidget {
                 horizontal: 8.0,
               ),
             ),
-            Expanded(
-              child: CustomCard(
-                color: const Color.fromRGBO(255, 204, 0, 1),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      text: 'Palavra do dia',
+            CustomCard(
+              color: const Color.fromRGBO(255, 204, 0, 1),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    text: meaning.value[0].partOfSpeech,
+                    color: Colors.black,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: CustomText(
+                      fontWeight: FontWeight.w900,
                       color: Colors.black,
+                      text: _word,
+                      size: 48,
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16.0),
-                      child: CustomText(
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black,
-                        text: text.value.join('-'),
-                        size: 48,
-                      ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: CustomText(
+                      color: Colors.black,
+                      text: silabes.value.join('-'),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16.0),
-                      child: CustomText(
-                        color: Colors.black,
-                        text: 'A-mi-za-de',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16.0),
-                      child: CustomText(
-                        color: Colors.black,
-                        text: 'Relação de afeto, de carinho,'
-                            'de estima e de dedicação entre duas pessoas, '
-                            'sendo esses sentimentos recíprocos.',
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                  // ListView.builder(
+                  //   shrinkWrap: true,
+                  //   itemCount: meaning.value[0].meanings.length,
+                  //   itemBuilder: (_j, j) => Padding(
+                  //     padding: const EdgeInsets.only(top: 16.0),
+                  //     child: CustomText(
+                  //       color: Colors.black,
+                  //       text: meaning.value[0].meanings[j],
+                  //     ),
+                  //   ),
+                  // )
+                ],
               ),
             ),
             Expanded(
               child: CustomCard(
                 color: const Color.fromRGBO(22, 26, 39, 1),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      text: 'Substantivo Feminino',
+                child: ListView.builder(
+                  itemCount: phrases.value.length,
+                  itemBuilder: (_, i) => Padding(
+                    padding: const EdgeInsets.only(top: 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          text: phrases.value[i].sentence,
+                        ),
+                        CustomText(
+                          text: phrases.value[i].author,
+                          color: Colors.white54,
+                        ),
+                      ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 24.0),
-                      child: CustomText(
-                        text: 'Frases com Amizade',
-                        fontWeight: FontWeight.bold,
-                        size: 24,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          CustomText(
-                            text: 'A amizade é um amor que nunca morre.',
-                          ),
-                          CustomText(
-                              text: '- Mário Quintana', color: Colors.white54),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          CustomText(
-                            text: 'A amizade é um amor que nunca morre.',
-                          ),
-                          CustomText(
-                              text: '- Mário Quintana', color: Colors.white54),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class LoadingIndicator extends StatelessWidget {
+  const LoadingIndicator({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
