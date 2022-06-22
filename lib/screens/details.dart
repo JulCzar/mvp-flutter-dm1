@@ -12,8 +12,10 @@ import '../widgets/custom_text.dart';
 class Details extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    String _word = 'Amizade';
+    var _word = useState('');
+
     var loading = useState(true);
+
     var silabes = useState<List<String>>([]);
     var phrases = useState<List<Phrase>>([]);
     var sinonim = useState<List<String>>([]);
@@ -38,8 +40,12 @@ class Details extends HookWidget {
     }
 
     useEffect(() {
-      getDetails(_word);
+      _word.value = "Amizade";
     }, const []);
+
+    useEffect(() {
+      if (_word.value != '') getDetails(_word.value);
+    }, [_word]);
 
     if (loading.value) {
       return const LoadingIndicator();
@@ -58,43 +64,55 @@ class Details extends HookWidget {
                 horizontal: 8.0,
               ),
             ),
-            CustomCard(
-              color: const Color.fromRGBO(255, 204, 0, 1),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(
-                    text: meaning.value[0].partOfSpeech,
-                    color: Colors.black,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: CustomText(
-                      fontWeight: FontWeight.w900,
+            Expanded(
+              child: CustomCard(
+                color: const Color.fromRGBO(255, 204, 0, 1),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: meaning.value[0].partOfSpeech,
                       color: Colors.black,
-                      text: _word,
-                      size: 48,
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: CustomText(
-                      color: Colors.black,
-                      text: silabes.value.join('-'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: CustomText(
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                        text: _word.value,
+                        size: 48,
+                      ),
                     ),
-                  ),
-                  // ListView.builder(
-                  //   shrinkWrap: true,
-                  //   itemCount: meaning.value[0].meanings.length,
-                  //   itemBuilder: (_j, j) => Padding(
-                  //     padding: const EdgeInsets.only(top: 16.0),
-                  //     child: CustomText(
-                  //       color: Colors.black,
-                  //       text: meaning.value[0].meanings[j],
-                  //     ),
-                  //   ),
-                  // )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: CustomText(
+                        color: Colors.black,
+                        text: silabes.value.join('-'),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 16.0),
+                      child: CustomText(
+                        text: 'Significados',
+                        color: Colors.black,
+                        fontWeight: FontWeight.w800,
+                        size: 24,
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: meaning.value[0].meanings.length,
+                        itemBuilder: (_j, j) => Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: CustomText(
+                            color: Colors.black,
+                            text: meaning.value[0].meanings[j],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -119,7 +137,7 @@ class Details extends HookWidget {
                   ),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
