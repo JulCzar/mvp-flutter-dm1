@@ -21,7 +21,7 @@ class Details extends HookWidget {
     var sinonim = useState<List<String>>([]);
     var meaning = useState<List<Meaning>>([]);
 
-    final wordFromHome = ModalRoute.of(context)!.settings.arguments;
+    final args = ModalRoute.of(context)?.settings.arguments;
 
     void getDetails(String word) async {
       var _response = await Future.wait([
@@ -40,13 +40,11 @@ class Details extends HookWidget {
     }
 
     useEffect(() {
-      _word.value = wordFromHome as String;
-      return null;
+      _word.value = "Amizade";
     }, const []);
 
     useEffect(() {
       if (_word.value != '') getDetails(_word.value);
-      return null;
     }, [_word]);
 
     if (loading.value) {
