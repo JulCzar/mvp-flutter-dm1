@@ -1,3 +1,5 @@
+import 'package:mvp_flutter_dm1/utils/parse_string_list.dart';
+
 class Meaning {
   late String _partOfSpeech;
   late List<String> _meanings;
@@ -5,12 +7,11 @@ class Meaning {
 
   Meaning._internal();
 
-  static Meaning fromJSON(Map<String,dynamic> data) {
+  static Meaning fromJSON(Map<String, dynamic> data) {
     var meaning = Meaning._internal();
 
     meaning._partOfSpeech = data['partOfSpeech'];
-    final List<String> meanings =  data['meanings'] as List<String>;
-    meaning._meanings =  meanings.map<String>((e) => (e)).toList();
+    meaning._meanings = parseStringList(data['meanings']);
     meaning._etymology = data['etymology'];
 
     return meaning;
