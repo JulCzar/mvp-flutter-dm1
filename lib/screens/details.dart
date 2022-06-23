@@ -20,16 +20,22 @@ class Details extends HookWidget {
     var phrases = useState<List<Phrase>>([]);
     var sinonim = useState<List<String>>([]);
     var meaning = useState<List<Meaning>>([]);
+    var hasError = useState(false);
 
     final wordFromHome = ModalRoute.of(context)?.settings.arguments;
 
     void getDetails(String word) async {
+      hasError.value = false;
       var _response = await Future.wait([
         api.get('/silabas/$word').then((v) => v.data),
         api.get('/frases/$word').then((v) => v.data),
         api.get('/sinonimos/$word').then((v) => v.data),
         api.get('/significados/$word').then((v) => v.data),
-      ]).whenComplete(() {
+      ]).onError((error, stackTrace) {
+        print(error);
+        hasError.value = true;
+        return [[], [], [], []];
+      }).whenComplete(() {
         loading.value = false;
       });
 
@@ -45,10 +51,41 @@ class Details extends HookWidget {
     }, const []);
 
     useEffect(() {
-      if (_word.value != '') getDetails(_word.value);
+      if (_word.value != '') {
+        try {
+          getDetails(_word.value);
+        } catch (e) {
+          print(e);
+        }
+      }
       return null;
     }, [_word]);
-
+    if (hasError.value) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Column(
+            children: const [
+              Padding(
+                child: Input(),
+                padding: EdgeInsets.symmetric(
+                  vertical: 16.0,
+                  horizontal: 8.0,
+                ),
+              ),
+              CustomCard(
+                color: Color.fromRGBO(255, 204, 0, 1),
+                child: Center(
+                  child: CustomText(
+                    text: 'Não foi possivel localizar a palavra inserida',
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }
     if (loading.value) {
       return const LoadingIndicator();
     }

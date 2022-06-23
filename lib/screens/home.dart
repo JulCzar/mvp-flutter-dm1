@@ -10,6 +10,7 @@ class Home extends StatelessWidget {
 
   final inputController = TextEditingController();
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
@@ -39,10 +40,12 @@ class Home extends StatelessWidget {
                 Button(
                   text: 'Buscar',
                   onPressed: () {
-                    Navigator.of(context).pushNamed(
-                      '/details',
-                      arguments: inputController.text,
-                    );
+                    if (inputController.text != '') {
+                      Navigator.of(context).pushNamed(
+                        '/details',
+                        arguments: inputController.text,
+                      );
+                    }
                   },
                 ),
               ],
