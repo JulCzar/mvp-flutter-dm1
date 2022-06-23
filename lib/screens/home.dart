@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mvp_flutter_dm1/app_widget.dart';
 
 import '../widgets/button.dart';
 import '../widgets/custom_input.dart';
@@ -9,9 +8,17 @@ class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
 
   final inputController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
+    void navigateToDetails() {
+      if (inputController.text != '') {
+        Navigator.of(context).pushNamed(
+          '/details',
+          arguments: inputController.text,
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
       body: Padding(
@@ -36,17 +43,11 @@ class Home extends StatelessWidget {
               children: [
                 Input(
                   controller: inputController,
+                  onEditingComplete: navigateToDetails,
                 ),
                 Button(
                   text: 'Buscar',
-                  onPressed: () {
-                    if (inputController.text != '') {
-                      Navigator.of(context).pushNamed(
-                        '/details',
-                        arguments: inputController.text,
-                      );
-                    }
-                  },
+                  onPressed: navigateToDetails,
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:mvp_flutter_dm1/widgets/ErrorHandler.dart';
 
 import '../models/meaning.dart';
 import '../models/phrase.dart';
@@ -10,6 +11,7 @@ import '../widgets/custom_input.dart';
 import '../widgets/custom_text.dart';
 
 class Details extends HookWidget {
+  final inputController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var _word = useState('');
@@ -26,6 +28,7 @@ class Details extends HookWidget {
 
     void getDetails(String word) async {
       hasError.value = false;
+      loading.value = true;
       var _response = await Future.wait([
         api.get('/silabas/$word').then((v) => v.data),
         api.get('/frases/$word').then((v) => v.data),
@@ -46,7 +49,9 @@ class Details extends HookWidget {
     }
 
     useEffect(() {
-      _word.value = wordFromHome as String;
+      wordFromHome as String;
+      _word.value = wordFromHome;
+      inputController.text = wordFromHome;
       return null;
     }, const []);
 
@@ -59,9 +64,17 @@ class Details extends HookWidget {
         }
       }
       return null;
-    }, [_word]);
+    }, [_word.value]);
+
+    void updateWord() {
+      _word.value = inputController.text;
+    }
+
     if (hasError.value) {
-      return const ErrorHandler();
+      return ErrorHandler(
+        inputController: inputController,
+        updateWord: updateWord,
+      );
     }
     if (loading.value) {
       return const LoadingIndicator();
@@ -73,9 +86,12 @@ class Details extends HookWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Padding(
-              child: Input(),
-              padding: EdgeInsets.symmetric(
+            Padding(
+              child: Input(
+                controller: inputController,
+                onEditingComplete: updateWord,
+              ),
+              padding: const EdgeInsets.symmetric(
                 vertical: 16.0,
                 horizontal: 8.0,
               ),
@@ -151,40 +167,6 @@ class Details extends HookWidget {
                       ],
                     ),
                   ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ErrorHandler extends StatelessWidget {
-  const ErrorHandler({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: const [
-            Padding(
-              child: Input(),
-              padding: EdgeInsets.symmetric(
-                vertical: 16.0,
-                horizontal: 8.0,
-              ),
-            ),
-            CustomCard(
-              color: Color.fromRGBO(255, 204, 0, 1),
-              child: Center(
-                child: CustomText(
-                  text: 'Não foi possivel localizar a palavra inserida',
                 ),
               ),
             )
