@@ -61,30 +61,7 @@ class Details extends HookWidget {
       return null;
     }, [_word]);
     if (hasError.value) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: SafeArea(
-          child: Column(
-            children: const [
-              Padding(
-                child: Input(),
-                padding: EdgeInsets.symmetric(
-                  vertical: 16.0,
-                  horizontal: 8.0,
-                ),
-              ),
-              CustomCard(
-                color: Color.fromRGBO(255, 204, 0, 1),
-                child: Center(
-                  child: CustomText(
-                    text: 'Não foi possivel localizar a palavra inserida',
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      );
+      return const ErrorHandler();
     }
     if (loading.value) {
       return const LoadingIndicator();
@@ -174,6 +151,40 @@ class Details extends HookWidget {
                       ],
                     ),
                   ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ErrorHandler extends StatelessWidget {
+  const ErrorHandler({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Column(
+          children: const [
+            Padding(
+              child: Input(),
+              padding: EdgeInsets.symmetric(
+                vertical: 16.0,
+                horizontal: 8.0,
+              ),
+            ),
+            CustomCard(
+              color: Color.fromRGBO(255, 204, 0, 1),
+              child: Center(
+                child: CustomText(
+                  text: 'Não foi possivel localizar a palavra inserida',
                 ),
               ),
             )
