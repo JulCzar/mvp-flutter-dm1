@@ -16,13 +16,13 @@ class Details extends HookWidget {
   Widget build(BuildContext context) {
     var _word = useState('');
 
-    var loading = useState(true);
+    var loading = useState(false);
+    var hasError = useState(true);
 
     var silabes = useState<List<String>>([]);
     var phrases = useState<List<Phrase>>([]);
     var sinonim = useState<List<String>>([]);
     var meaning = useState<List<Meaning>>([]);
-    var hasError = useState(false);
 
     final wordFromHome = ModalRoute.of(context)?.settings.arguments;
 
