@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 class Input extends StatelessWidget {
   final TextEditingController? controller;
-  const Input({Key? key, this.controller}) : super(key: key);
+  final VoidCallback? onEditingComplete;
+  const Input({Key? key, this.controller, this.onEditingComplete})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onEditingComplete: onEditingComplete,
       style: const TextStyle(color: Colors.white),
       controller: controller,
       decoration: const InputDecoration(
